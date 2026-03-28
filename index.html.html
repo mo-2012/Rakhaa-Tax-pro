@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>TAX PRO - نظام ضريبة القيمة المضافة</title>
+<link rel="icon" type="image/png" href="TAXPRO.png">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Cairo', sans-serif;
+    background: #f4f7fc;
+    color: #1e293b;
+    padding: 30px 20px;
+    line-height: 1.5;
+  }
+
+  .container {
+    max-width: 1300px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    overflow: hidden;
+  }
+
+  /* Header */
+  .header {
+    background: #0c2d5e;
+    padding: 20px 30px;
+    color: white;
+    border-bottom: 3px solid #c9a96e;
+  }
+  .header-content {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .logo {
+    width: 60px;
+    height: 60px;
+    background: white;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    font-weight: bold;
+    color: #0c2d5e;
+  }
+  .app-title h2 {
+    font-size: 28px;
+    font-weight: 700;
+  }
+  .tagline {
+    font-size: 14px;
+    color: #c9a96e;
+  }
+  .subtitle {
+    font-size: 13px;
+    margin-top: 8px;
+    color: #b9cdff;
+  }
+
+  /* Main content */
+  .main-content {
+    padding: 25px 30px;
+  }
+
+  /* File Manager Section */
+  .section {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 25px;
+  }
+  .section h3 {
+    color: #0c2d5e;
+    font-size: 18px;
+    margin-bottom: 15px;
+    font-weight: 600;
+    border-right: 4px solid #c9a96e;
+    padding-right: 12px;
+  }
+
+  /* Buttons */
+  .btn {
+    padding: 8px 18px;
+    border-radius: 6px;
+    border: none;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2s;
+    font-family: inherit;
+  }
+  .btn-primary {
+    background: #c9a96e;
+    color: #0c2d5e;
+  }
+  .btn-primary:hover {
+    background: #b8925a;
+  }
+  .btn-secondary {
+    background: #e2e8f0;
+    color: #0c2d5e;
+    border: 1px solid #cbd5e1;
+  }
+  .btn-secondary:hover {
+    background: #cbd5e1;
+  }
+  .btn-danger {
+    background: #f1f5f9;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+  }
+  .btn-danger:hover {
+    background: #fee2e2;
+  }
+  .btn-sm {
+    padding: 5px 12px;
+    font-size: 12px;
+  }
+
+  .file-controls {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+
+  /* Saved files list */
+  .saved-files {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    max-height: 250px;
+    overflow-y: auto;
+  }
+  .file-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .file-item:last-child {
+    border-bottom: none;
+  }
+  .file-info h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #0c2d5e;
+  }
+  .file-info p {
+    font-size: 12px;
+    color: #64748b;
+  }
+  .file-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  /* Upload area */
+  .upload-area {
+    border: 2px dashed #cbd5e1;
+    border-radius: 10px;
+    padding: 30px;
+    text-align: center;
+    background: #f8fafc;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .upload-area:hover {
+    border-color: #c9a96e;
+    background: #fef9e6;
+  }
+  .upload-icon {
+    font-size: 40px;
+    color: #c9a96e;
+    margin-bottom: 10px;
+  }
+  .upload-text {
+    font-size: 16px;
+    font-weight: 500;
+    color: #1e293b;
+  }
+  .upload-note {
+    font-size: 12px;
+    color: #64748b;
+  }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    font-weight: 600;
+    color: #64748b;
+    border-bottom: 2px solid transparent;
+  }
+  .tab.active {
+    color: #0c2d5e;
+    border-bottom-color: #c9a96e;
+  }
+  .tab-content {
+    display: block;
+  }
+  .hidden {
+    display: none;
+  }
+
+  /* Cards (KPI) */
+  .cards {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+  }
+  .card {
+    flex: 1;
+    min-width: 180px;
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid #e2e8f0;
+  }
+  .card h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 12px;
+  }
+  .card h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: #0c2d5e;
+  }
+
+  /* Table */
+  .table-wrapper {
+    overflow-x: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  th {
+    background: #f1f5f9;
+    padding: 12px;
+    text-align: center;
+    font-weight: 600;
+    color: #0c2d5e;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  td {
+    padding: 10px;
+    text-align: center;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  /* Manual input */
+  .manual-input {
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid #e2e8f0;
+    text-align: center;
+  }
+  .input-group {
+    display: inline-block;
+    margin: 0 15px;
+  }
+  .input-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 5px;
+    color: #475569;
+  }
+  .input-group input {
+    width: 200px;
+    padding: 8px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 14px;
+    text-align: center;
+  }
+  .input-group input:focus {
+    outline: none;
+    border-color: #c9a96e;
+  }
+
+  .footer {
+    background: #f1f5f9;
+    text-align: center;
+    padding: 15px;
+    font-size: 12px;
+    color: #64748b;
+    border-top: 1px solid #e2e8f0;
+  }
+
+  @media (max-width: 700px) {
+    .main-content { padding: 15px; }
+    .card { min-width: 100%; }
+    .input-group { margin: 10px 0; display: block; }
+    .input-group input { width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="header-content">
+      <div class="logo">TP</div>
+      <div class="app-title">
+        <h2>TAX PRO</h2>
+        <div class="tagline">نظام إدارة ضريبة القيمة المضافة</div>
+      </div>
+    </div>
+    <div class="subtitle">تحليل الفواتير | تسوية الضريبة | إدارة الملفات</div>
+  </div>
+
+  <div class="main-content">
+    <!-- File Manager Section -->
+    <div class="section">
+      <h3>📁 إدارة الملفات</h3>
+      <div class="file-controls">
+        <button class="btn btn-primary" onclick="saveCurrentExcel()">💾 حفظ الملف الحالي</button>
+        <button class="btn btn-primary" onclick="downloadCurrentExcel()">📥 تنزيل ملف Excel</button>
+        <button class="btn btn-danger" onclick="clearAllFiles()">🗑️ مسح جميع الملفات</button>
+      </div>
+      <div id="savedFiles" class="saved-files">
+        <div style="padding: 20px; text-align: center; color: #64748b;">لا توجد ملفات محفوظة</div>
+      </div>
+    </div>
+
+    <!-- File Uploader -->
+    <div class="section">
+      <h3>📂 رفع ملف Excel</h3>
+      <div class="upload-area" id="uploadArea">
+        <div class="upload-icon">📊</div>
+        <div class="upload-text">انقر لاختيار ملف أو اسحبه هنا</div>
+        <div class="upload-note">يدعم XLSX, XLS</div>
+        <input type="file" id="fileInput" accept=".xlsx, .xls" style="display: none;">
+      </div>
+    </div>
+
+    <!-- Tabs for Results -->
+    <div class="tabs">
+      <div class="tab active" data-tab="basic">تحليل صادر / مستلم</div>
+      <div class="tab" data-tab="reconcile">تسوية الضريبة</div>
+    </div>
+
+    <!-- Tab 1: Basic Analysis -->
+    <div id="basic" class="tab-content">
+      <div class="cards">
+        <div class="card"><h3>إجمالي الضريبة الواردة (مستلم)</h3><h1 id="totalInput">0.00</h1></div>
+        <div class="card"><h3>إجمالي الضريبة الصادرة</h3><h1 id="totalOutput">0.00</h1></div>
+        <div class="card"><h3>صافي ضريبة القيمة المضافة</h3><h1 id="netVAT">0.00</h1></div>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>#</th><th>المسدد خلال العام</th><th>نسبة الضريبة (%)</th><th>قيمة الضريبة</th><th>قيمة التعامل</th><th>حالة الفاتورة</th><th>اتجاه الفاتورة</th></tr>
+          </thead>
+          <tbody id="tableBody"><tr><td colspan="7" style="text-align:center;">لم يتم رفع أي ملف بعد</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Tab 2: Reconciliation -->
+    <div id="reconcile" class="tab-content hidden">
+      <div class="cards">
+        <div class="card"><h3>رصيد أول المدة</h3><h1 id="openingBalance">0.00</h1></div>
+        <div class="card"><h3>رصيد ضريبة المدخلات</h3><h1 id="inputBalance">0.00</h1></div>
+        <div class="card"><h3>ضريبة المبيعات</h3><h1 id="outputBalance">0.00</h1></div>
+        <div class="card"><h3>سدادات الفترة</h3><h1 id="paymentsBalance">0.00</h1></div>
+        <div class="card"><h3>الرصيد النهائي</h3><h1 id="closingBalance">0.00</h1></div>
+      </div>
+      <div class="manual-input">
+        <div class="input-group">
+          <label>رصيد أول المدة</label>
+          <input type="number" id="manualOpening" placeholder="0.00">
+        </div>
+        <div class="input-group">
+          <label>سدادات القيمة المضافة</label>
+          <input type="number" id="manualPayments" placeholder="0.00">
+        </div>
+        <div style="margin-top: 15px;">
+          <button class="btn btn-primary" onclick="recalculateVAT()">احسب الرصيد النهائي</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    TAX PRO - نظام إدارة ضريبة القيمة المضافة
+  </div>
+</div>
+
+<script>
+  // ========== Global Variables ==========
+  let totalInput = 0, totalOutput = 0;
+  let openingValue = 0, paymentsValue = 0;
+  let currentExcelFile = null;
+  let currentWorkbook = null;
+
+  // DOM elements
+  const totalInputEl = document.getElementById("totalInput");
+  const totalOutputEl = document.getElementById("totalOutput");
+  const netVATEl = document.getElementById("netVAT");
+  const tableBody = document.getElementById("tableBody");
+  const fileInput = document.getElementById("fileInput");
+  const uploadArea = document.getElementById("uploadArea");
+
+  function updateValues() {
+    totalInputEl.innerText = totalInput.toFixed(2);
+    totalOutputEl.innerText = totalOutput.toFixed(2);
+    let net = totalOutput - totalInput;
+    netVATEl.innerText = net.toFixed(2);
+  }
+
+  // Process Excel file
+  function processExcelFile(workbook, fileName) {
+    let sheet = workbook.Sheets[workbook.SheetNames[0]];
+    let rows = XLSX.utils.sheet_to_json(sheet);
+    tableBody.innerHTML = "";
+    totalInput = 0;
+    totalOutput = 0;
+
+    rows.forEach((row, idx) => {
+      const payments = findValue(row, ['المسدد خلال العام', 'Payments', 'مدفوعات']);
+      const vatPercent = findValue(row, ['ضريبة القيمة المضافة (%)', 'VAT Percentage', 'نسبة الضريبة']);
+      const vatValue = findValue(row, ['ضريبة القيمة المضافة (قيمة)', 'VAT Value', 'قيمة الضريبة']);
+      const transactionValue = findValue(row, ['قيمة التعامل قبل ضريبة القيمة المضافة', 'Transaction Value', 'قيمة التعامل']);
+      const invoiceStatus = findValue(row, ['حالة الفاتورة', 'Invoice Status', 'الحالة']);
+      let invoiceDirection = findValue(row, ['اتجاه الفاتورة', 'Invoice Direction', 'الاتجاه']);
+      
+      let vatNum = parseFloat(vatValue) || 0;
+      let directionText = invoiceDirection ? invoiceDirection.toString() : '';
+      if (directionText.includes('مستلم')) totalInput += vatNum;
+      else if (directionText.includes('صادر')) totalOutput += vatNum;
+      
+      let tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${idx+1}</td>
+        <td>${payments ? parseFloat(payments).toFixed(2) : '0.00'}</td>
+        <td>${vatPercent ? parseFloat(vatPercent).toFixed(2)+'%' : '0%'}</td>
+        <td>${vatNum.toFixed(2)}</td>
+        <td>${transactionValue ? parseFloat(transactionValue).toFixed(2) : '0.00'}</td>
+        <td>${invoiceStatus || '—'}</td>
+        <td>${directionText || 'غير محدد'}</td>
+      `;
+      tableBody.appendChild(tr);
+    });
+    updateValues();
+    detectValues(rows);
+    recalculateVAT();
+  }
+
+  function findValue(row, possibleNames) {
+    for (let name of possibleNames) if (row[name] !== undefined) return row[name];
+    return null;
+  }
+
+  function detectValues(rows) {
+    if (rows.length === 0) return;
+    let keys = Object.keys(rows[0]);
+    let openingCol = keys.find(k => k.includes("رصيد") && k.includes("المدة"));
+    let paymentCol = keys.find(k => k.includes("سداد") || k.includes("سدادات") || k.includes("دفع"));
+    if (openingCol) { openingValue = parseFloat(rows[0][openingCol]) || 0; document.getElementById("manualOpening").value = openingValue; }
+    if (paymentCol) { paymentsValue = parseFloat(rows[0][paymentCol]) || 0; document.getElementById("manualPayments").value = paymentsValue; }
+  }
+
+  function recalculateVAT() {
+    let manualOpening = parseFloat(document.getElementById("manualOpening").value);
+    if (!isNaN(manualOpening)) openingValue = manualOpening;
+    let manualPayments = parseFloat(document.getElementById("manualPayments").value);
+    if (!isNaN(manualPayments)) paymentsValue = manualPayments;
+
+    let afterInput = openingValue - totalInput;
+    let afterOutput = afterInput + totalOutput;
+    let finalVAT = afterOutput - paymentsValue;
+
+    document.getElementById("openingBalance").innerText = openingValue.toFixed(2);
+    document.getElementById("inputBalance").innerText = totalInput.toFixed(2);
+    document.getElementById("outputBalance").innerText = totalOutput.toFixed(2);
+    document.getElementById("paymentsBalance").innerText = paymentsValue.toFixed(2);
+    document.getElementById("closingBalance").innerText = finalVAT.toFixed(2);
+  }
+
+  // ========== File Management (localStorage) ==========
+  function loadSavedFiles() {
+    let saved = localStorage.getItem('vatExcelFiles');
+    let files = saved ? JSON.parse(saved) : [];
+    let container = document.getElementById('savedFiles');
+    if (files.length === 0) {
+      container.innerHTML = '<div style="padding: 20px; text-align: center; color: #64748b;">لا توجد ملفات محفوظة</div>';
+      return;
+    }
+    let html = '';
+    files.forEach((file, idx) => {
+      let date = new Date(file.date);
+      let dateStr = date.toLocaleDateString('ar-EG');
+      let timeStr = date.toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'});
+      html += `<div class="file-item">
+                <div class="file-info"><h4>${file.name}</h4><p>${dateStr} - ${timeStr}</p></div>
+                <div class="file-actions">
+                  <button class="btn btn-secondary btn-sm" onclick="loadSavedExcel(${idx})">تحميل</button>
+                  <button class="btn btn-danger btn-sm" onclick="deleteSavedExcel(${idx})">حذف</button>
+                </div>
+              </div>`;
+    });
+    container.innerHTML = html;
+  }
+
+  function saveCurrentExcel() {
+    if (!currentExcelFile) { alert('لا يوجد ملف مرفوع!'); return; }
+    let fileName = prompt('أدخل اسم للملف:', currentExcelFile.name.replace(/\.[^/.]+$/, ""));
+    if (!fileName) return;
+    let saved = localStorage.getItem('vatExcelFiles');
+    let files = saved ? JSON.parse(saved) : [];
+    let reader = new FileReader();
+    reader.onload = function(e) {
+      let fileData = { id: Date.now(), name: fileName + '.xlsx', date: new Date().toISOString(), data: e.target.result.split(',')[1] };
+      files.push(fileData);
+      localStorage.setItem('vatExcelFiles', JSON.stringify(files));
+      loadSavedFiles();
+      alert('تم حفظ الملف');
+    };
+    reader.readAsDataURL(currentExcelFile);
+  }
+
+  function loadSavedExcel(index) {
+    let saved = localStorage.getItem('vatExcelFiles');
+    let files = saved ? JSON.parse(saved) : [];
+    if (!files[index]) { alert('الملف غير موجود'); return; }
+    let fileObj = files[index];
+    let byteString = atob(fileObj.data);
+    let byteArray = new Uint8Array(byteString.length);
+    for (let i = 0; i < byteString.length; i++) byteArray[i] = byteString.charCodeAt(i);
+    let blob = new Blob([byteArray], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+    let loadedFile = new File([blob], fileObj.name, {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+    currentExcelFile = loadedFile;
+    let reader = new FileReader();
+    reader.onload = function(ev) {
+      let data = new Uint8Array(ev.target.result);
+      currentWorkbook = XLSX.read(data, {type:'array'});
+      processExcelFile(currentWorkbook, fileObj.name);
+      alert(`تم تحميل "${fileObj.name}"`);
+    };
+    reader.readAsArrayBuffer(loadedFile);
+  }
+
+  function deleteSavedExcel(index) {
+    if (!confirm('حذف هذا الملف؟')) return;
+    let saved = localStorage.getItem('vatExcelFiles');
+    let files = saved ? JSON.parse(saved) : [];
+    files.splice(index,1);
+    localStorage.setItem('vatExcelFiles', JSON.stringify(files));
+    loadSavedFiles();
+    alert('تم حذف الملف');
+  }
+
+  function downloadCurrentExcel() {
+    if (!currentWorkbook) { alert('لا توجد بيانات للتنزيل'); return; }
+    let summaryData = [
+      ["TAX PRO - تقرير الضريبة"],
+      [],
+      ["إجمالي الضريبة الواردة", totalInput],
+      ["إجمالي الضريبة الصادرة", totalOutput],
+      ["صافي الضريبة", totalOutput - totalInput],
+      [],
+      ["رصيد أول المدة", openingValue],
+      ["سدادات الفترة", paymentsValue],
+      ["الرصيد النهائي", openingValue - totalInput + totalOutput - paymentsValue],
+      [],
+      ["تاريخ التقرير", new Date().toLocaleDateString('ar-EG')]
+    ];
+    let summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
+    XLSX.utils.book_append_sheet(currentWorkbook, summarySheet, "ملخص");
+    let fileName = prompt('اسم الملف:', `TAXPRO_${new Date().toISOString().slice(0,10)}.xlsx`);
+    XLSX.writeFile(currentWorkbook, fileName || 'TAXPRO_report.xlsx');
+    alert('تم تنزيل الملف');
+  }
+
+  function clearAllFiles() {
+    if (confirm('مسح جميع الملفات المحفوظة؟')) {
+      localStorage.removeItem('vatExcelFiles');
+      loadSavedFiles();
+      alert('تم مسح جميع الملفات');
+    }
+  }
+
+  // File upload handler
+  fileInput.addEventListener("change", function(e) {
+    let file = e.target.files[0];
+    if (!file) return;
+    currentExcelFile = file;
+    let reader = new FileReader();
+    reader.onload = function(event) {
+      let data = new Uint8Array(event.target.result);
+      currentWorkbook = XLSX.read(data, {type:'array'});
+      processExcelFile(currentWorkbook, file.name);
+    };
+    reader.readAsArrayBuffer(file);
+  });
+
+  // Drag & drop and click on upload area
+  uploadArea.addEventListener("click", () => fileInput.click());
+  uploadArea.addEventListener("dragover", (e) => { e.preventDefault(); uploadArea.style.background = "#fef9e6"; });
+  uploadArea.addEventListener("dragleave", () => { uploadArea.style.background = "#f8fafc"; });
+  uploadArea.addEventListener("drop", (e) => {
+    e.preventDefault();
+    uploadArea.style.background = "#f8fafc";
+    let file = e.dataTransfer.files[0];
+    if (file && /\.(xlsx|xls)$/i.test(file.name)) {
+      fileInput.files = e.dataTransfer.files;
+      let changeEvent = new Event('change');
+      fileInput.dispatchEvent(changeEvent);
+    } else alert('يرجى رفع ملف Excel فقط');
+  });
+
+  // Tabs
+  document.querySelectorAll(".tab").forEach(tab => {
+    tab.addEventListener("click", () => {
+      document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+      tab.classList.add("active");
+      document.querySelectorAll(".tab-content").forEach(c => c.classList.add("hidden"));
+      document.getElementById(tab.dataset.tab).classList.remove("hidden");
+    });
+  });
+
+  // Initialize
+  loadSavedFiles();
+  recalculateVAT();
+</script>
+</body>
+</html>
